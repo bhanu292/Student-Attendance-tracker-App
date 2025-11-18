@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Attendance Tracker</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://unpkg.com/vue@3"></script>
+</head>
+<body>
+<div id="app" class="container">
+    <h1 class="title">Student Attendance Tracker</h1>
+    <div class="box-container">
+        <div class="box teacher-box" @click="goto('teacher')">
+            <h2>Teacher</h2>
+            <p>Login as Teacher</p>
+        </div>
+
+        <div class="box student-box" @click="goto('student')">
+            <h2>Student</h2>
+            <p>Login as Student</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

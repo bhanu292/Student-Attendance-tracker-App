@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="../store.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h2>Student Dashboard</h2>
+
+    <button onclick="logout()">Logout</button>
+</header>
+
+<div id="studentApp" class="container">
+
+    <h3>Your Attendance</h3>
+
+    <div v-for="record in attendance">
+        <p>{{ record.date }} - <strong>{{ getStatus(record) }}</strong></p>
+    </div>
+
+</div>
+
+<script>
+function logout(){
+    localStorage.removeItem("currentUser");
+    location.href="../index.html";
+}
+
+const { createApp } = Vue;
+
+createApp({
+    data(){
+        return {
+            user: Store.state.currentUser,
+            attendance: Store.state.attendance
+        }
+    },
+
+    methods: {
+        getStatus(record){
+            const x = record.records.find(r => r.name === this.user.username);
+            return x ? x.status : "N/A";
+        }
+    }
+}).mount("#studentApp");
+</script>
+
+</body>
+</html>

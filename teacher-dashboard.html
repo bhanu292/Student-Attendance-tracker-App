@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="../store.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h2>Teacher Dashboard</h2>
+
+    <button onclick="logout()">Logout</button>
+</header>
+
+<div id="teacherApp" class="container">
+
+    <!-- Add Class -->
+    <div class="card">
+        <h3>Add Class</h3>
+        <input v-model="newClass" placeholder="Enter Class Name">
+        <button @click="addClass">Add</button>
+    </div>
+
+    <!-- Add Student -->
+    <div class="card">
+        <h3>Add Student</h3>
+
+        <select v-model="selectedClass">
+            <option disabled value="">Select Class</option>
+            <option v-for="c in classes" :value="c.id">{{ c.name }}</option>
+        </select>
+
+        <input v-model="studentName" placeholder="Student Name">
+        <button @click="addStudent">Add Student</button>
+    </div>
+
+    <!-- Take Attendance -->
+    <div class="card">
+        <h3>Take Attendance</h3>
+
+        <select v-model="attendanceClass">
+            <option disabled value="">Select Class</option>
+            <option v-for="c in classes" :value="c.id">{{ c.name }}</option>
+        </select>
+
+        <button @click="startAttendance">Start</button>
+
+        <div v-if="attendanceList.length">
+            <h4>Attendance</h4>
+            <div v-for="s in attendanceList">
+                {{ s.name }}
+                <select v-model="s.status">
+                    <option value="present">Present</option>
+                    <option value="absent">Absent</option>
+                </select>
+            </div>
+
+            <button @click="saveAttendance">Save Attendance</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function logout(){
+    localStorage.removeItem("currentUser");
+    location.href="../index.html";
+}
+
+const { createApp } = Vue;
+
+createApp({
+    data(){
+        return {
+            classes: Store.state.classes,
+            students: Store.state.students,
+
+            newClass: "",
+            selectedClass: "",
+            studentName: "",
+
+            attendanceClass: "",
+            attendanceList: []
+        }
+    },
+
+    methods:{
+        addClass(){
+            Store.state.classes.push({ id: Date.now(), name: this.newClass });
+            Store.save();
+            this.newClass = "";
+        },
+
+        addStudent(){
+            Store.state.students.push({
+                id: Date.now(),
+                classId: this.selectedClass,
+                name: this.studentName
+            });
+            Store.save();
+            this.studentName = "";
+        },
+
+        startAttendance(){
+            this.attendanceList = Store.state.students
+                .filter(s => s.classId == this.attendanceClass)
+                .map(s => ({ ...s, status: "present" }));
+        },
+
+        saveAttendance(){
+            Store.state.attendance.push({
+                id: Date.now(),
+                classId: this.attendanceClass,
+                date: new Date().toISOString().slice(0,10),
+                records: this.attendanceList
+            });
+
+            Store.save();
+            alert("Attendance Saved!");
+        }
+    }
+}).mount("#teacherApp");
+</script>
+
+</body>
+</html>
